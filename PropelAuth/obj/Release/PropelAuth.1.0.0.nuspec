@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>PropelAuth</id>
+    <version>1.0.0</version>
+    <authors>Your Name</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <description>PropelAuth models for OrgMemberInfo and User</description>
+    <tags>propelauth authentication authorization</tags>
+    <repository type="git" commit="7e1a1565a43232e497f9b51705cff2a5635f2a01" />
+    <dependencies>
+      <group targetFramework="net8.0">
+        <dependency id="Microsoft.AspNetCore.Authorization" version="8.0.7" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="13.0.3" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/bin/Release/net8.0/PropelAuth.dll" target="lib/net8.0/PropelAuth.dll" />
+  </files>
+</package>

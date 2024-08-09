@@ -1,0 +1,12 @@
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/bin/Debug/net8.0/PropelAuth.deps.json
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/bin/Debug/net8.0/PropelAuth.dll
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/bin/Debug/net8.0/PropelAuth.pdb
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Debug/net8.0/PropelAuth.csproj.AssemblyReference.cache
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Debug/net8.0/PropelAuth.GeneratedMSBuildEditorConfig.editorconfig
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Debug/net8.0/PropelAuth.AssemblyInfoInputs.cache
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Debug/net8.0/PropelAuth.AssemblyInfo.cs
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Debug/net8.0/PropelAuth.csproj.CoreCompileInputs.cache
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Debug/net8.0/PropelAuth.dll
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Debug/net8.0/refint/PropelAuth.dll
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Debug/net8.0/PropelAuth.pdb
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Debug/net8.0/ref/PropelAuth.dll
