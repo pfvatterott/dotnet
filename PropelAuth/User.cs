@@ -18,6 +18,8 @@ namespace PropelAuth.Models
         public Dictionary<string, object> properties { get; set; }
         public string loginMethod { get; set; }
 
+        public string activeOrgId { get; set; }
+
 
 
         public User(ClaimsPrincipal claimsPrincipal)
@@ -30,11 +32,25 @@ namespace PropelAuth.Models
             legacyUserId = claimsPrincipal.FindFirstValue("legacy_user_id");
             impersonatorUserId = claimsPrincipal.FindFirstValue("impersonator_user_id");
 
-            var orgsClaim = claimsPrincipal.FindFirst("org_id_to_org_member_info");
+            var orgsClaim = claimsPrincipal.FindFirst("org_id_to_org_member_info") ?? claimsPrincipal.FindFirst("org_member_info");
             if (orgsClaim != null)
             {
-                orgIdToOrgMemberInfo = JsonConvert.DeserializeObject<Dictionary<string, OrgMemberInfo>>(orgsClaim.Value);
+                if (orgsClaim.Type == "org_id_to_org_member_info")
+                {
+                    orgIdToOrgMemberInfo = JsonConvert.DeserializeObject<Dictionary<string, OrgMemberInfo>>(orgsClaim.Value);
+                    activeOrgId = orgIdToOrgMemberInfo.Keys.FirstOrDefault();
+                }
+                else
+                {
+                    var orgInfo = JsonConvert.DeserializeObject<OrgMemberInfo>(orgsClaim.Value);
+                    orgIdToOrgMemberInfo = new Dictionary<string, OrgMemberInfo>
+                {
+                    { orgInfo.org_id, orgInfo }
+                };
+                    activeOrgId = orgInfo.org_id;
+                }
             }
+
             var propertiesClaim = claimsPrincipal.FindFirst("properties");
             if (propertiesClaim != null)
             {
@@ -44,8 +60,11 @@ namespace PropelAuth.Models
             var loginMethodClaim = claimsPrincipal.FindFirst("login_method");
             if (loginMethodClaim != null)
             {
-                var loginMethodDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(loginMethodClaim.Value);
-                loginMethod = loginMethodDict["login_method"];
+                var loginMethodObj = JsonConvert.DeserializeObject<Dictionary<string, string>>(loginMethodClaim.Value);
+                if (loginMethodObj != null && loginMethodObj.TryGetValue("login_method", out var method))
+                {
+                    loginMethod = method;
+                }
             }
 
         }
@@ -124,13 +143,40 @@ namespace PropelAuth.Models
 
             return orgIdToOrgMemberInfo.Values.FirstOrDefault(org => org.org_name.Equals(orgName, StringComparison.OrdinalIgnoreCase));
         }
+        public object GetUserProperty(string propertyName)
+        {
+            if (properties != null && properties.TryGetValue(propertyName, out var value))
+            {
+                return value;
+            }
+            return null;
+        }
 
+        public OrgMemberInfo GetActiveOrg()
+        {
+            if (string.IsNullOrEmpty(activeOrgId) || orgIdToOrgMemberInfo == null)
+            {
+                return null;
+            }
+
+            if (orgIdToOrgMemberInfo.TryGetValue(activeOrgId, out var activeOrgInfo))
+            {
+                return activeOrgInfo;
+            }
+
+            return null;
+        }
+
+        public string GetActiveOrgId()
+        {
+            return activeOrgId;
+        }
 
     }
 
     public static class ClaimsPrincipalExtensions
     {
-        public static User ToUser(this ClaimsPrincipal claimsPrincipal)
+        public static User GetUser(this ClaimsPrincipal claimsPrincipal)
         {
             return new User(claimsPrincipal);
         }

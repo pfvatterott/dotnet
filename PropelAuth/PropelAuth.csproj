@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>PropelAuth</PackageId>
-    <Version>1.0.6</Version>
+    <Version>0.2.1</Version>
     <Authors>Your Name</Authors>
     <Company>Your Company</Company>
     <Description>PropelAuth models for OrgMemberInfo and User</Description>

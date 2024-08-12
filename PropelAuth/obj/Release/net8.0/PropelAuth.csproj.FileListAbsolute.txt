@@ -10,3 +10,4 @@
 /Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Release/net8.0/refint/PropelAuth.dll
 /Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Release/net8.0/PropelAuth.pdb
 /Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Release/net8.0/ref/PropelAuth.dll
+/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/obj/Release/net8.0/PropelAuth.sourcelink.json

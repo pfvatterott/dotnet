@@ -782,7 +782,7 @@
     "/Users/paulvatterott/.nuget/packages/": {}
   },
   "project": {
-    "version": "1.0.6",
+    "version": "0.2.1",
     "restore": {
       "projectUniqueName": "/Users/paulvatterott/Documents/GitHub/dotnet/PropelAuth/PropelAuth.csproj",
       "projectName": "PropelAuth",
