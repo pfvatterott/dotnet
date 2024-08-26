@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("PropelAuth models for OrgMemberInfo and User")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.2.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.2.1+7b4f903575d70b7b7b0b79241f02d29b7e90ea26")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.2.1+1c0f024aa69349737fd939e1615220400d155483")]
 [assembly: System.Reflection.AssemblyProductAttribute("PropelAuth")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PropelAuth")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.2.1.0")]

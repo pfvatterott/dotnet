@@ -5,20 +5,19 @@ namespace PropelAuth.Models
 {
     public class User
     {
-        public string userId { get; set; }
-        public string email { get; set; }
-        public string firstName { get; set; }
-        public string lastName { get; set; }
-        public string username { get; set; }
+        public string? userId { get; set; }
+        public string? email { get; set; }
+        public string? firstName { get; set; }
+        public string? lastName { get; set; }
+        public string? username { get; set; }
 
-        public string legacyUserId { get; set; }
+        public string? legacyUserId { get; set; }
 
-        public string impersonatorUserId { get; set; }
-        public Dictionary<string, OrgMemberInfo> orgIdToOrgMemberInfo { get; set; }
-        public Dictionary<string, object> properties { get; set; }
-        public string loginMethod { get; set; }
-
-        public string activeOrgId { get; set; }
+        public string? impersonatorUserId { get; set; }
+        public Dictionary<string, OrgMemberInfo>? orgIdToOrgMemberInfo { get; set; }
+        public Dictionary<string, object>? properties { get; set; }
+        public string? loginMethod { get; set; }
+        public string? activeOrgId { get; set; }
 
 
 
@@ -38,16 +37,16 @@ namespace PropelAuth.Models
                 if (orgsClaim.Type == "org_id_to_org_member_info")
                 {
                     orgIdToOrgMemberInfo = JsonConvert.DeserializeObject<Dictionary<string, OrgMemberInfo>>(orgsClaim.Value);
-                    activeOrgId = orgIdToOrgMemberInfo.Keys.FirstOrDefault();
+                    activeOrgId = orgIdToOrgMemberInfo?.Keys.FirstOrDefault();
                 }
                 else
                 {
                     var orgInfo = JsonConvert.DeserializeObject<OrgMemberInfo>(orgsClaim.Value);
                     orgIdToOrgMemberInfo = new Dictionary<string, OrgMemberInfo>
                 {
-                    { orgInfo.org_id, orgInfo }
+                    { orgInfo.orgId ?? "", orgInfo }
                 };
-                    activeOrgId = orgInfo.org_id;
+                    activeOrgId = orgInfo.orgId;
                 }
             }
 
@@ -73,7 +72,7 @@ namespace PropelAuth.Models
         {
             if (orgIdToOrgMemberInfo != null && orgIdToOrgMemberInfo.TryGetValue(orgId, out var orgInfo))
             {
-                return orgInfo.user_role == role;
+                return orgInfo.userRole == role;
             }
             return false;
         }
@@ -82,9 +81,9 @@ namespace PropelAuth.Models
         {
             if (orgIdToOrgMemberInfo != null && orgIdToOrgMemberInfo.TryGetValue(orgId, out var orgInfo))
             {
-                return orgInfo.user_role == role ||
-                       (orgInfo.inherited_user_roles_plus_current_role != null &&
-                        orgInfo.inherited_user_roles_plus_current_role.Contains(role));
+                return orgInfo.userRole == role ||
+                       (orgInfo.inheritedUserRolesPlusCurrentRole != null &&
+                        orgInfo.inheritedUserRolesPlusCurrentRole.Contains(role));
             }
             return false;
         }
@@ -93,7 +92,7 @@ namespace PropelAuth.Models
         {
             if (orgIdToOrgMemberInfo != null && orgIdToOrgMemberInfo.TryGetValue(orgId, out var orgInfo))
             {
-                return orgInfo.user_permissions != null && orgInfo.user_permissions.Contains(permission);
+                return orgInfo.userPermissions != null && orgInfo.userPermissions.Contains(permission);
             }
             return false;
         }
@@ -102,9 +101,9 @@ namespace PropelAuth.Models
         {
             if (orgIdToOrgMemberInfo != null && orgIdToOrgMemberInfo.TryGetValue(orgId, out var orgInfo))
             {
-                if (orgInfo.user_permissions != null)
+                if (orgInfo.userPermissions != null)
                 {
-                    return permissions.All(permission => orgInfo.user_permissions.Contains(permission));
+                    return permissions.All(permission => orgInfo.userPermissions.Contains(permission));
                 }
             }
             return false;
@@ -141,9 +140,9 @@ namespace PropelAuth.Models
                 return null;
             }
 
-            return orgIdToOrgMemberInfo.Values.FirstOrDefault(org => org.org_name.Equals(orgName, StringComparison.OrdinalIgnoreCase));
+            return orgIdToOrgMemberInfo.Values.FirstOrDefault(org => org.orgName.Equals(orgName, StringComparison.OrdinalIgnoreCase));
         }
-        public object GetUserProperty(string propertyName)
+        public object? GetUserProperty(string propertyName)
         {
             if (properties != null && properties.TryGetValue(propertyName, out var value))
             {
@@ -152,7 +151,7 @@ namespace PropelAuth.Models
             return null;
         }
 
-        public OrgMemberInfo GetActiveOrg()
+        public OrgMemberInfo? GetActiveOrg()
         {
             if (string.IsNullOrEmpty(activeOrgId) || orgIdToOrgMemberInfo == null)
             {
@@ -167,7 +166,7 @@ namespace PropelAuth.Models
             return null;
         }
 
-        public string GetActiveOrgId()
+        public string? GetActiveOrgId()
         {
             return activeOrgId;
         }
