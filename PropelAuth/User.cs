@@ -5,8 +5,8 @@ namespace PropelAuth.Models
 {
     public class User
     {
-        public string? userId { get; set; }
-        public string? email { get; set; }
+        public string userId { get; set; }
+        public string email { get; set; }
         public string? firstName { get; set; }
         public string? lastName { get; set; }
         public string? username { get; set; }
@@ -16,10 +16,8 @@ namespace PropelAuth.Models
         public string? impersonatorUserId { get; set; }
         public Dictionary<string, OrgMemberInfo>? orgIdToOrgMemberInfo { get; set; }
         public Dictionary<string, object>? properties { get; set; }
-        public string? loginMethod { get; set; }
+        public LoginMethod loginMethod { get; set; }
         public string? activeOrgId { get; set; }
-
-
 
         public User(ClaimsPrincipal claimsPrincipal)
         {
@@ -37,7 +35,6 @@ namespace PropelAuth.Models
                 if (orgsClaim.Type == "org_id_to_org_member_info")
                 {
                     orgIdToOrgMemberInfo = JsonConvert.DeserializeObject<Dictionary<string, OrgMemberInfo>>(orgsClaim.Value);
-                    activeOrgId = orgIdToOrgMemberInfo?.Keys.FirstOrDefault();
                 }
                 else
                 {
@@ -59,54 +56,64 @@ namespace PropelAuth.Models
             var loginMethodClaim = claimsPrincipal.FindFirst("login_method");
             if (loginMethodClaim != null)
             {
-                var loginMethodObj = JsonConvert.DeserializeObject<Dictionary<string, string>>(loginMethodClaim.Value);
-                if (loginMethodObj != null && loginMethodObj.TryGetValue("login_method", out var method))
+                loginMethod = ParseLoginMethod(loginMethodClaim.Value);
+            }
+            else
+            {
+                loginMethod = LoginMethod.Unknown();
+            }
+
+            LoginMethod ParseLoginMethod(string loginMethodString)
+            {
+                switch (loginMethodString)
                 {
-                    loginMethod = method;
+                    case "password":
+                        return LoginMethod.Password();
+                    case "magic_link":
+                        return LoginMethod.MagicLink();
+                    case "social_sso":
+                        var provider = claimsPrincipal.FindFirst("social_provider")?.Value;
+                        return LoginMethod.SocialSso(provider ?? "unknown");
+                    case "email_confirmation_link":
+                        return LoginMethod.EmailConfirmationLink();
+                    case "saml_sso":
+                        var samlProvider = claimsPrincipal.FindFirst("saml_provider")?.Value;
+                        var orgId = claimsPrincipal.FindFirst("org_id")?.Value;
+                        return LoginMethod.SamlSso(samlProvider ?? "unknown", orgId ?? "unknown");
+                    case "impersonation":
+                        return LoginMethod.Impersonation();
+                    case "generated_from_backend_api":
+                        return LoginMethod.GeneratedFromBackendApi();
+                    default:
+                        return LoginMethod.Unknown();
                 }
             }
+
 
         }
 
         public bool IsRoleInOrg(string orgId, string role)
         {
-            if (orgIdToOrgMemberInfo != null && orgIdToOrgMemberInfo.TryGetValue(orgId, out var orgInfo))
-            {
-                return orgInfo.userRole == role;
-            }
-            return false;
+            var org = GetOrg(orgId);
+            return org?.IsRole(role) ?? false;
         }
 
         public bool IsAtLeastRoleInOrg(string orgId, string role)
         {
-            if (orgIdToOrgMemberInfo != null && orgIdToOrgMemberInfo.TryGetValue(orgId, out var orgInfo))
-            {
-                return orgInfo.userRole == role ||
-                       (orgInfo.inheritedUserRolesPlusCurrentRole != null &&
-                        orgInfo.inheritedUserRolesPlusCurrentRole.Contains(role));
-            }
-            return false;
+            var org = GetOrg(orgId);
+            return org?.IsAtLeastRole(role) ?? false;
         }
 
         public bool HasPermissionInOrg(string orgId, string permission)
         {
-            if (orgIdToOrgMemberInfo != null && orgIdToOrgMemberInfo.TryGetValue(orgId, out var orgInfo))
-            {
-                return orgInfo.userPermissions != null && orgInfo.userPermissions.Contains(permission);
-            }
-            return false;
+            var org = GetOrg(orgId);
+            return org?.HasPermission(permission) ?? false;
         }
 
         public bool HasAllPermissionsInOrg(string orgId, string[] permissions)
         {
-            if (orgIdToOrgMemberInfo != null && orgIdToOrgMemberInfo.TryGetValue(orgId, out var orgInfo))
-            {
-                if (orgInfo.userPermissions != null)
-                {
-                    return permissions.All(permission => orgInfo.userPermissions.Contains(permission));
-                }
-            }
-            return false;
+            var org = GetOrg(orgId);
+            return org?.HasAllPermissions(permissions) ?? false;
         }
 
         public OrgMemberInfo[] GetOrgs()
@@ -115,7 +122,6 @@ namespace PropelAuth.Models
             {
                 return Array.Empty<OrgMemberInfo>();
             }
-
             return orgIdToOrgMemberInfo.Values.ToArray();
         }
 
@@ -133,15 +139,6 @@ namespace PropelAuth.Models
             return null;
         }
 
-        public OrgMemberInfo? GetOrgByName(string orgName)
-        {
-            if (orgIdToOrgMemberInfo == null)
-            {
-                return null;
-            }
-
-            return orgIdToOrgMemberInfo.Values.FirstOrDefault(org => org.orgName.Equals(orgName, StringComparison.OrdinalIgnoreCase));
-        }
         public object? GetUserProperty(string propertyName)
         {
             if (properties != null && properties.TryGetValue(propertyName, out var value))
@@ -162,7 +159,6 @@ namespace PropelAuth.Models
             {
                 return activeOrgInfo;
             }
-
             return null;
         }
 
@@ -180,4 +176,6 @@ namespace PropelAuth.Models
             return new User(claimsPrincipal);
         }
     }
+
+
 }
